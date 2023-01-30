@@ -1,6 +1,5 @@
 <template>
   <DragNode />
-  <h5>hehhe</h5>
 </template>
 
 <script>
@@ -17,5 +16,7 @@ export default {
 </script>
 
 <style>
+@import "./App.css";
+
 
 </style>

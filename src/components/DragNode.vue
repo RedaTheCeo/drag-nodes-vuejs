@@ -1,8 +1,9 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
-import { VueFlow, useVueFlow } from "@vue-flow/core";
+import { Position, VueFlow, useVueFlow, MarkerType } from "@vue-flow/core";
 import { nextTick, watch } from "vue";
 import SideBar from "./SideBar.vue";
+import { reactive } from "vue";
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
@@ -15,15 +16,63 @@ const {
   addEdges,
   addNodes,
   viewport,
+  getNode,
   project,
   vueFlowRef,
+  onPaneReady,
+  getSelectedNodes,
+  getNodes,
+
 } = useVueFlow({
   nodes: [
     {
       id: "1",
       type: "input",
-      label: "input node",
+      label: (
+        <div>
+          <h2>First Node</h2>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. nesciunt
+            obcaecati delectus odit aperiam?
+          </p>
+        </div>
+      ),
       position: { x: 250, y: 25 },
+      data: { toolbarPosition: Position.Top },
+      // markerEnd: MarkerType.Arrow,
+      // style: { stroke: "orange" },
+      // labelBgStyle: { fill: "orange" },
+    },
+    {
+      id: "2",
+      type: "default",
+      label: "Second node",
+      position: { x: 450, y: 385 },
+      // markerEnd: MarkerType.Arrow,
+      // style: { stroke: "orange" },
+      // labelBgStyle: { fill: "orange" },
+    },
+    {
+      id: "3",
+      type: "default",
+      label: "Third node",
+      position: { x: 50, y: 385 },
+    },
+    {
+      id: "e1-2",
+      type: "smoothstep",
+      label: "True",
+      source: "1",
+      target: "2",
+      style: { stroke: "green" },
+    },
+    {
+      id: "e1-3",
+      type: "smoothstep",
+      label: "false",
+      source: "1",
+      target: "3",
+      style: { stroke: "red" },
     },
   ],
 });
@@ -34,6 +83,8 @@ const onDragOver = (event) => {
   if (event.dataTransfer) {
     event.dataTransfer.dropEffect = "move";
   }
+
+  console.log(getNodes.value)
 };
 
 onConnect((params) => addEdges([params]));
@@ -52,7 +103,7 @@ const onDrop = (event) => {
     id: getId(),
     type,
     position,
-    label: `${type} node`,
+    label: `${type}`,
   };
 
   addNodes([newNode]);
@@ -75,12 +126,62 @@ const onDrop = (event) => {
     );
   });
 };
+
+//Edit
+
+const defaultLabel = "-";
+
+const opts = reactive({
+  bg: "#fff",
+  label: "First Node",
+  hidden: false,
+});
+
+const updateNode = () => {
+  const node = getNode.value("1");
+  node.label = opts.label.trim() !== "" ? opts.label : defaultLabel;
+  node.style = { backgroundColor: opts.bg };
+  node.hidden = opts.hidden;
+  console.log(getSelectedNodes);
+};
+
+onPaneReady(({ fitView }) => {
+  // fitView();
+  // updateNode();
+});
+// watch the stored nodes
+watch(getNodes, (nodes) => {
+  console.log('nodes changed', nodes)
+  // addNodes([{
+  //     id: "e1-2",
+  //     type: "smoothstep",
+  //     label: "false",
+  //     source: "1",
+  //     target: "2",
+  //     style: { stroke: "red" },
+  //   }]);
+});
+
+
 </script>
 <template>
   <div class="dndflow" @drop="onDrop">
-    <VueFlow @dragover="onDragOver" />
-
     <SideBar />
+
+    <VueFlow @dragover="onDragOver" lineType="smoothstep">
+      <div class="updatenode__controls">
+        <label>label:</label>
+        <input v-model="opts.label" @input="updateNode" />
+
+        <label class="updatenode__bglabel">background:</label>
+        <input v-model="opts.bg" type="color" @input="updateNode" />
+
+        <div class="updatenode__checkboxwrapper">
+          <label>hidden:</label>
+          <input v-model="opts.hidden" type="checkbox" @change="updateNode" />
+        </div>
+      </div>
+    </VueFlow>
   </div>
 </template>
 
@@ -112,48 +213,30 @@ body,
   transform-origin: bottom right;
 }
 
-.dndflow {
-  flex-direction: column;
+.updatenode__controls {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 4;
+  font-size: 11px;
+  background-color: #d3d3d3;
+  border-radius: 10px;
+  padding: 8px;
+}
+.updatenode__controls label {
+  display: blocK;
+}
+.updatenode__controls input {
+  padding: 2px;
+  border-radius: 5px;
+}
+.updatenode__bglabel {
+  margin-top: 8px;
+}
+.updatenode__checkboxwrapper {
   display: flex;
-  height: 100%;
-}
-.dndflow aside {
-  color: #fff;
-  font-weight: 700;
-  border-right: 1px solid #eee;
-  padding: 15px 10px;
-  font-size: 12px;
-  background: rgba(16, 185, 129, 0.75);
-  -webkit-box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.3);
-  box-shadow: 0 5px 10px #0000004d;
-}
-.dndflow aside .nodes > * {
-  margin-bottom: 10px;
-  cursor: grab;
-  font-weight: 500;
-  -webkit-box-shadow: 5px 5px 10px 2px rgba(0, 0, 0, 0.25);
-  box-shadow: 5px 5px 10px 2px #00000040;
-}
-.dndflow aside .description {
-  margin-bottom: 10px;
-}
-.dndflow .vue-flow-wrapper {
-  flex-grow: 1;
-  height: 100%;
-}
-@media screen and (min-width: 640px) {
-  .dndflow {
-    flex-direction: row;
-  }
-  .dndflow aside {
-    min-width: 25%;
-  }
-}
-@media screen and (max-width: 639px) {
-  .dndflow aside .nodes {
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-  }
+  justify-content: center;
+  align-items: center;
+  margin-top: 8px;
 }
 </style>

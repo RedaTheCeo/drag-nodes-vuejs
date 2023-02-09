@@ -1,54 +1,18 @@
-<script>
-export default {
-  data() {
-    return {
-      nodes: [
-        {
-          title: "Credit Score",
-          style: "cs",
-          description:
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. nesciunt obcaecati delectus odit aperiam?",
-        },
-        {
-          title: "Deposits",
-          style: "dp",
-          description:
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. nesciunt obcaecati delectus odit aperiam?",
-        },
-        {
-          title: "Withdrawals",
-          style: "wd",
-          description:
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. nesciunt obcaecati delectus odit aperiam?",
-        },
-        {
-          title: "Positions",
-          style: "ps",
-          description:
-            "Lorem ipsum dolor sit amet consectetur adipisicing elit. nesciunt obcaecati delectus odit aperiam?",
-        },
-      ],
-      title: "",
-      description: "",
-    };
-  },
-  // actions
-  methods: {
-    increment() {
-      this.count++;
-    },
-    AddNode(title, description) {
-      this.nodes.push({ title, description });
-      this.title = "";
-      this.description = "";
-    },
-    onDragStart(event, nodeType) {
-      if (event.dataTransfer) {
-        event.dataTransfer.setData("application/vueflow", nodeType);
-        event.dataTransfer.effectAllowed = "move";
-      }
-    },
-  },
+<!-- eslint-disable vue/no-parsing-error -->
+<script setup>
+import { useNodesStore } from "@/stores/nodes";
+
+const store = useNodesStore();
+
+const onDragStart = (event, label, node) => {
+  if (event.dataTransfer) {
+    event.dataTransfer.setData("application/vueflow/type", label);
+    event.dataTransfer.setData("application/vueflow/label", label);
+    event.dataTransfer.setData("application/vueflow/title", node.title);
+    event.dataTransfer.setData("application/vueflow/value", node.value);
+    event.dataTransfer.setData("application/vueflow/operator", node.operator);
+    event.dataTransfer.effectAllowed = "move";
+  }
 };
 </script>
 
@@ -58,16 +22,16 @@ export default {
     <div class="inputs">
       <div>
         <label for="title">Title</label>
-        <input id="title" type="text" v-model="title" />
+        <input id="title" type="text" v-model="store.title" />
       </div>
       <div>
         <label for="description">Description</label>
-        <input id="description" type="text" v-model="description" />
+        <input id="description" type="text" v-model="store.description" />
       </div>
-      <button @click="AddNode(title, description)">New Node</button>
+      <button @click="store.AddNode(store.title, store.description)">New Node</button>
     </div>
     <div class="nodes">
-      <div
+      <!-- <div
         class="vue-flow__node-input"
         :draggable="true"
         @dragstart="onDragStart($event, 'input')"
@@ -89,16 +53,27 @@ export default {
         @dragstart="onDragStart($event, 'output')"
       >
         Output Node
-      </div>
+      </div> -->
       <div
-        v-for="node in nodes"
+        v-for="node in store.nodes"
         :key="node"
         :class="`custom ${node.style}`"
         :draggable="true"
-        @dragstart="onDragStart($event, `<div>
-          <h2>${node.title}</h2>
-          <p>${node.description}</p>
-        </div>`)"
+        @dragstart="
+          onDragStart(
+            $event,
+            `<div class='t'>
+              <h2 class='title'><span><img src='${node.img}'/><span/>${node.title}</h2>
+              <div >
+                if
+                <p class='decorated'>${node.title}<p/>
+                  ${node.operator}
+                <p class='decorated'>${node.value}<p/>
+              <div/>
+            </div>`,
+            node
+          )
+        "
       >
         <h2>{{ node.title }}</h2>
         <p>{{ node.description }}</p>

@@ -12,6 +12,7 @@ import SideBar from "./SideBar.vue";
 import { reactive } from "vue";
 import { useNodesStore } from "@/stores/nodes";
 import { isProxy, toRaw } from "vue";
+import TransitionEdge from "./TransitionEdge.vue";
 
 const store = useNodesStore();
 store.emptyRule();
@@ -40,11 +41,13 @@ const {
   getSelectedNodes,
   getNodes,
   getSelected,
-  setNodes
+  setNodes,
 } = useVueFlow({
-  nodes: store._nodes,
+  nodes: store.testingNodes,
   defaultEdgeOptions: {
-    type: "smoothstep",
+    // type: "smoothstep",
+    type: "custom",
+    animated: true,
   },
 });
 
@@ -170,9 +173,9 @@ const handleUpdate = () => {
   const newNodes = rawObjectOrArray.map((el) => {
     if (el.id == store.currentNode.id) {
       let test = el.label.toString();
-      test = test.replace(el.data.title, store.rule.title)
-      test = test.replace(el.data.operator, store.rule.operator)
-      test = test.replace(el.data.value, store.rule.value)
+      test = test.replace(el.data.title, store.rule.title);
+      test = test.replace(el.data.operator, store.rule.operator);
+      test = test.replace(el.data.value, store.rule.value);
       el.label = test;
       el.data.title = store.rule.title;
       el.data.operator = store.rule.operator;
@@ -190,29 +193,19 @@ const handleUpdate = () => {
     return el;
   });
   setNodes(newNodes);
-  console.log('---------------------	START:	newNodes	---------------------');
+  console.log("---------------------	START:	newNodes	---------------------");
   console.log(newNodes);
-  console.log('---------------------	END:	newNodes	---------------------');
-  console.log(nodes.value);
+  console.log("---------------------	END:	newNodes	---------------------");
+  console.log(toRaw(edges.value));
 };
 </script>
 <template>
   <div class="dndflow" @drop="onDrop">
     <SideBar />
-
-    <VueFlow @dragover="onDragOver" @connect="handleConnect">
-      <div class="updatenode__controls">
-        <label>label:</label>
-        <input v-model="opts.label" @input="updateNode" />
-
-        <label class="updatenode__bglabel">background:</label>
-        <input v-model="opts.bg" type="color" @input="updateNode" />
-
-        <div class="updatenode__checkboxwrapper">
-          <label>hidden:</label>
-          <input v-model="opts.hidden" type="checkbox" @change="updateNode" />
-        </div>
-      </div>
+    <VueFlow  @dragover="onDragOver" @connect="handleConnect">
+      <template #edge-custom="props">
+        <TransitionEdge v-bind="props" />
+      </template>
     </VueFlow>
     <!-- :style="{ transform: false ? 'scaleX(100%)' : 'scaleX(0%)' }" -->
     <div class="aside" :style="{ display: expanded ? 'block' : 'none' }">

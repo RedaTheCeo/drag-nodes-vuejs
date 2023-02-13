@@ -25,7 +25,9 @@ body,
     text-align: center;
     color: #2c3e50;
 }
-
+.vue-flow {
+    background: rgba(221, 221, 221, 0.74);
+  }
 .vue-flow__minimap {
     transform: scale(75%);
     transform-origin: bottom right;

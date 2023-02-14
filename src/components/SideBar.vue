@@ -18,8 +18,19 @@ const onDragStart = (event, label, node) => {
 
 <template>
   <aside>
+    <h3>Blocks</h3>
+    <div class="search">
+      <img src="../../public/search.svg" />
+      <input type="text" placeholder="search .." />
+    </div>
+    <div class="subnav">
+      <div id="triggers">Triggers</div>
+      <div id="actions">Actions</div>
+      <div id="loggers">Loggers</div>
+    </div>
+
     <div class="description">You can drag these nodes to the pane.</div>
-    <div class="inputs">
+    <!-- <div class="inputs">
       <div>
         <label for="title">Title</label>
         <input id="title" type="text" v-model="store.title" />
@@ -28,8 +39,10 @@ const onDragStart = (event, label, node) => {
         <label for="description">Description</label>
         <input id="description" type="text" v-model="store.description" />
       </div>
-      <button @click="store.AddNode(store.title, store.description)">New Node</button>
-    </div>
+      <button @click="store.AddNode(store.title, store.description)">
+        New Node
+      </button>
+    </div> -->
     <div class="nodes">
       <!-- <div
         class="vue-flow__node-input"
@@ -83,6 +96,62 @@ const onDragStart = (event, label, node) => {
 </template>
 
 <style scoped>
+aside h3 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #393c44;
+  text-align: start;
+}
+.search input {
+  width: 100%;
+  height: 40px;
+  background-color: #fff;
+  border: 1px solid #e8e8ef;
+  box-sizing: border-box;
+  box-shadow: 0px 2px 8px rgba(34, 34, 87, 0.05);
+  border-radius: 5px;
+  text-indent: 35px;
+  font-size: 16px;
+}
+.search img {
+  position: absolute;
+  margin-top: 10px;
+  width: 18px;
+  margin-left: 12px;
+}
+.subnav {
+  border-bottom: 1px solid #e8e8ef;
+  width: calc(100% + 40px);
+  margin-left: -40px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+.subnav div {
+  margin-left: 20px;
+  font-weight: 500;
+  font-size: 14px;
+  text-align: center;
+  color: #808292;
+  height: 48px;
+  line-height: 48px;
+  cursor: pointer;
+}
+.subnav div:nth-child(1) {
+  color: #393c44 !important;
+}
+.subnav div:nth-child(1):after {
+  display: block;
+  content: "";
+  width: 100%;
+  height: 4px;
+  background-color: #217ce8;
+  margin-top: -4px;
+}
+
 .inputs {
   display: flex;
   flex-direction: column;

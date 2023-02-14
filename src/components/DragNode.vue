@@ -9,6 +9,7 @@ import {
 } from "@vue-flow/core";
 import { nextTick, watch } from "vue";
 import SideBar from "./SideBar.vue";
+import TopBar from "./TopBar.vue";
 import { reactive } from "vue";
 import { useNodesStore } from "@/stores/nodes";
 import { isProxy, toRaw } from "vue";
@@ -48,6 +49,7 @@ const {
     // type: "smoothstep",
     type: "custom",
     animated: true,
+    snapToGrid: true,
   },
 });
 
@@ -200,9 +202,10 @@ const handleUpdate = () => {
 };
 </script>
 <template>
+  <TopBar />
   <div class="dndflow" @drop="onDrop">
     <SideBar />
-    <VueFlow  @dragover="onDragOver" @connect="handleConnect">
+    <VueFlow @dragover="onDragOver" @connect="handleConnect">
       <template #edge-custom="props">
         <TransitionEdge v-bind="props" />
       </template>
